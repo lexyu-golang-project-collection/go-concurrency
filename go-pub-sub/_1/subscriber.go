@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"sync"
 )
 
@@ -14,11 +15,25 @@ type Subscriber struct {
 }
 
 func (sub *Subscriber) run(ctx context.Context) {
-
+	for {
+		select {
+		case msg := <-sub.channel:
+			log.Println(sub.name, string(msg.data))
+		case <-sub.quit:
+			return
+		case <-ctx.Done():
+			return
+		}
+	}
 }
 
-func (s *Subscriber) publish(ctx context.Context, msg *Message) {
-
+func (sub *Subscriber) publish(ctx context.Context, msg *Message) {
+	select {
+	case <-ctx.Done():
+		return
+	case sub.channel <- msg:
+	default:
+	}
 }
 
 func NewSubscriber(name string) *Subscriber {

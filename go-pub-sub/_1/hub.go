@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"sync"
 )
 
@@ -16,10 +17,48 @@ func NewHub() *Hub {
 	}
 }
 
+func (hub *Hub) publish(ctx context.Context, msg *Message) error {
+	hub.mu.Lock()
+	for sub := range hub.subscribers {
+		sub.publish(ctx, msg)
+	}
+	hub.mu.Unlock()
+
+	return nil
+}
+
 func (hub *Hub) subscribe(ctx context.Context, subscribe *Subscriber) error {
-	panic("")
+	hub.mu.Lock()
+	hub.subscribers[subscribe] = struct{}{}
+	hub.mu.Unlock()
+
+	go func() {
+		select {
+		case <-subscribe.quit:
+		case <-ctx.Done():
+			hub.mu.Lock()
+			delete(hub.subscribers, subscribe)
+			hub.mu.Unlock()
+		}
+	}()
+
+	go subscribe.run(ctx)
+
+	return nil
 }
 
 func (hub *Hub) unSubscribe(ctx context.Context, subscribe *Subscriber) error {
-	panic("")
+	hub.mu.Lock()
+	log.Printf("%+v cancel subscribe", subscribe.name)
+	delete(hub.subscribers, subscribe)
+	hub.mu.Unlock()
+	close(subscribe.quit)
+	return nil
+}
+
+func (hub *Hub) users() int {
+	hub.mu.Lock()
+	length := len(hub.subscribers)
+	hub.mu.Unlock()
+	return length
 }
