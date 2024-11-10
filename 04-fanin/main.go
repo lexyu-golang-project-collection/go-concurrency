@@ -51,8 +51,7 @@ func fanInSimple(cs ...<-chan string) <-chan string {
 }
 
 func main() {
-	// Demo1()
-
+	Demo1()
 	Demo2()
 }
 

@@ -21,6 +21,6 @@ func main() {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 
-	time.AfterFunc(time.Second, cancel)
+	time.AfterFunc(3*time.Second, cancel)
 	sleepAndTalk(ctx, 5*time.Second, "hello")
 }
