@@ -3,12 +3,9 @@ package main
 import (
 	"context"
 	"log"
-	"sync"
 )
 
 type Subscriber struct {
-	mu sync.Mutex
-
 	name    string
 	channel chan *Message
 	quit    chan struct{}
@@ -32,7 +29,9 @@ func (sub *Subscriber) publish(ctx context.Context, msg *Message) {
 	case <-ctx.Done():
 		return
 	case sub.channel <- msg:
+		log.Printf("Subscriber %s received message", sub.name)
 	default:
+		log.Printf("Subscriber %s channel full, message dropped", sub.name)
 	}
 }
 

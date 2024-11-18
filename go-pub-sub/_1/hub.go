@@ -19,11 +19,11 @@ func NewHub() *Hub {
 
 func (hub *Hub) publish(ctx context.Context, msg *Message) error {
 	hub.mu.Lock()
+	log.Printf("Hub broadcasting to %d subscribers", len(hub.subscribers))
 	for sub := range hub.subscribers {
 		sub.publish(ctx, msg)
 	}
 	hub.mu.Unlock()
-
 	return nil
 }
 
@@ -47,7 +47,7 @@ func (hub *Hub) subscribe(ctx context.Context, subscribe *Subscriber) error {
 	return nil
 }
 
-func (hub *Hub) unSubscribe(ctx context.Context, subscribe *Subscriber) error {
+func (hub *Hub) unSubscribe(subscribe *Subscriber) error {
 	hub.mu.Lock()
 	log.Printf("%+v cancel subscribe", subscribe.name)
 	delete(hub.subscribers, subscribe)
@@ -56,7 +56,7 @@ func (hub *Hub) unSubscribe(ctx context.Context, subscribe *Subscriber) error {
 	return nil
 }
 
-func (hub *Hub) users() int {
+func (hub *Hub) getUsers() int {
 	hub.mu.Lock()
 	length := len(hub.subscribers)
 	hub.mu.Unlock()
