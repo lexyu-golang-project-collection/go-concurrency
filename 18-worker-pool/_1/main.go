@@ -41,7 +41,7 @@ func main() {
 	// Demo1 和 Demo2 的對比測試
 	// compareDemo()
 
-	// 或者您想單獨執行 Demo
+	// 單獨執行 Demo
 	runDemo1()
 	// runDemo2()
 }
