@@ -9,7 +9,7 @@ func f(left, right chan int) {
 }
 
 func main() {
-	const n = 1000
+	const n = 10
 	leftmost := make(chan int)
 	left := leftmost
 	right := leftmost

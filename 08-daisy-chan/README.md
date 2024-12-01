@@ -1,22 +1,33 @@
 ```mermaid
 sequenceDiagram
-    participant Main
-    participant F1 as Function 1
-    participant F2 as Function 2
-    participant F3 as Function 3
-    participant C1 as Channel 1
-    participant C2 as Channel 2
-    participant C3 as Channel 3
+    participant M as Main
+    participant L as leftmost channel
+    participant G1 as f(left1, right1)
+    participant G2 as f(left2, right2)
+    participant Gn as f(leftn, rightn)
+    participant R as rightmost channel
+    participant AG as Anonymous<br/>Goroutine
 
-    Main->>F1: Start
-    F1->>C1: Create channel
-    F1->>F2: Pass C1, start
-    F2->>C2: Create channel
-    F2->>F3: Pass C2, start
-    F3->>C3: Create channel
-    F3->>C2: Send value
-    C2->>F2: Receive value
-    F2->>C1: Send value
-    C1->>F1: Receive value
-    F1->>Main: Return final value
+    Note over M: leftmost = make(chan int)
+    
+    M->>L: Create leftmost
+    
+    Note over M,R: Create chain of n goroutines<br/>Each goroutine receives from right<br/>and sends to left channel
+    M->>G1: go f(left1, right1)
+    M->>G2: go f(left2, right2)
+    Note over G2: ...
+    M->>Gn: go f(leftn, rightn)
+    M->>R: Create rightmost
+    
+    M->>AG: go func(rightmost)
+    AG->>R: Send 1
+    
+    R->>Gn: Receive 1
+    Gn->>G2: Send 2
+    Note over G2: ...
+    G2->>G1: Send n-1
+    G1->>L: Send n
+    L->>M: Receive n+1
+    
+    Note over M: Print final value<br/>(equals to n+1)
 ```
