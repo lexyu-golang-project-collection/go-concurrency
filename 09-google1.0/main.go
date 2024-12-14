@@ -23,7 +23,7 @@ func fakeSearch(kind string) Search {
 
 }
 
-func Goolge(query string) (result []Result) {
+func Google(query string) (result []Result) {
 	result = append(result, Web(query))
 	result = append(result, Image(query))
 	result = append(result, Video(query))
@@ -34,7 +34,7 @@ func main() {
 	rand.New(rand.NewSource(time.Now().UnixNano()))
 	start := time.Now()
 
-	results := Goolge("golang")
+	results := Google("golang")
 
 	elapsed := time.Since(start)
 	fmt.Println(results)
