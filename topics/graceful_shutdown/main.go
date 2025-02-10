@@ -10,7 +10,7 @@ import (
 func gracefulShutdown() {
 	fmt.Println("\n=== Graceful Shutdown ===")
 
-	// Setup context with cancellation
+	// Setup context with resource_leak
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
